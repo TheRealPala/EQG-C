@@ -218,12 +218,13 @@ using namespace std;
 
 void RiempiM(cord *);
 void StampaM(cord *);
-void GenP(cord*);
-void CMPIns(cord*);
-void M(cord*);
-bool CMPR(cord*, short, short);
-bool CMPC(cord*, short, short);
-bool CMPD(cord*, short, short);
+void GenP(cord *);
+void CMPIns(cord *);
+void M(cord *);
+bool CMPR(cord *, short, short);
+bool CMPC(cord *, short, short);
+bool CMPD(cord *, short, short);
+bool CMPDS(cord *, short, short);
 int main(int argc, char** argv) {
     srand(time(NULL));
     cord gioco;
@@ -249,7 +250,7 @@ void StampaM(cord *g){
         for(short j = 0; j < 8; j++){
             cout << "\t" << g->M_OTTO[i][j];
         }
-        cout << "\n" <<endl;
+        cout << endl;
     }
     cout << "Cordinate CELLE RIEMPITE: \n Ordine \tCordX \tCordY" << endl;
     for(short i = 0; i < 8; i++){
@@ -271,21 +272,22 @@ void CMPIns(cord *g){
     int cmpr = 0;
     int cmpd = 0;
     int cmpc = 0;
+    int cmpds = 0;
     for(short i = 0; i < 7; i++){
         cond = 0;
         cout << "Cella n: " << i << endl;
         for(mx = 0; mx < 8; mx++){
-            if (cond == 3){
+            if (cond == 4){
                 break;
             }
             for(my = 0; my < 8; my++){
-                char a;
                 cout << "Posizione Controllata: " << mx <<"||" << my << endl;
                 cmpr = CMPR(g, mx, my);
                 cmpd = CMPD(g, mx, my);
                 cmpc = CMPC(g, mx, my);
-                cond = cmpr + cmpd + cmpc;
-                if(cond == 3){
+                cmpds = CMPDS(g, mx, my);
+                cond = cmpr + cmpd + cmpc + cmpds;
+                if(cond == 4){
                     g->M_OTTO[mx][my] = 1;
                     g->M_CORD[i + 1][0] = mx;
                     g->M_CORD[i + 1][1] = my;
@@ -349,24 +351,25 @@ bool CMPD(cord *g, short r, short c){
                 dyf++;
             }
             d = dxf - dxi;
-            for(short i = dxi, j = dyi; i < d; i++){
+            for(short i = dxi, j = dyi; i <= d; i++, j++){
                 if(g->M_OTTO[i][j] == 0)
                     cont++;
             }
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
-            if(cont == d)
+            if(cont >= d)
                 return 1;
             else
                 return 0;
             break;
         case 2:
+            dxi = dyi = 0;
             for(short i = 0; i < 8; i++){
                 if(g->M_OTTO[i][i] == 0){
                     cont ++;
                 }
             }
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
-            if(cont == 8)
+            if(cont >= 8)
                 return 1;
             else{
                 return 0;
@@ -381,18 +384,90 @@ bool CMPD(cord *g, short r, short c){
                 dxf++;
                 dyf++;
             }
-            d = dyf - dxi;
+            d = dyf - dyi;
             for(short i = dxi, j = dyi; i < d; i++,j++){
                 if(g->M_OTTO[i][j] == 0)
                     cont++;
             }
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
-            if(cont == d)
+            if(cont >= d)
                 return 1;
             else
                 return 0;
             break;
     }
 }
-
+bool CMPDS(cord *g, short r, short c){
+    cout << "CMPDS: ";
+    short pos = 0;
+    short src = r + c; // 1 se sopra ds, 2 se sulla ds, 3 se sotto ds
+    short cont = 0;
+    short dxi = r;
+    short dyi = c;
+    short dxf = r;
+    short dyf = c;
+    short d = 0;
+    if(src < 7)
+        pos = 1;
+    else if(src > 7)
+        pos = 3;
+    else
+        pos = 2;
+    switch(pos){
+        case 1:
+             for(short i = r; i > 0; i-- ){
+                dxi--;
+                dyi++;
+            }
+            for(short i = c; i > 0; i-- ){
+                dxf++;
+                dyf--;
+            }
+            d = dxf - dxi;
+            for(short i = dxi, j = dyi; j > 0; i++, j--){
+                if(g->M_OTTO[i][j] == 0){
+                    cont++;
+                }
+            }
+            cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+            if(cont >= d)
+                return 1;
+            else
+                return 0;
+            break;
+        case 2:
+            for(short i = 0, j = 7; i < 8; i++, j--){
+                if(g->M_OTTO[i][j] == 0){
+                    cont ++;
+                }
+            }
+            cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+            if(cont >= 8)
+                return 1;
+            else{
+                return 0;
+            }
+            break;
+        case 3:
+            for(short i = c; i < 7; i++ ){
+                dxi--;
+                dyi++;
+            }
+            for(short i = r; i < 7; i++ ){
+                dxf++;
+                dyf--;
+            }
+            d = dxf - dxi;
+            for(short i = dxi, j = dyi; i < 7; i++, j-- ){
+                if(g->M_OTTO[i][j] == 0)
+                    cont++;
+            }
+            cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+            if(cont >= d)
+                return 1;
+            else
+                return 0;
+    }
+    
+}
  

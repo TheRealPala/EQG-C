@@ -208,6 +208,7 @@ bool CMPD(cord *g, short r, short c){
 #include <string.h>
 #include <math.h>
 #include <windows.h>
+#define DEBUG //scommentare questa riga per tutto il debug
 typedef struct M{
     bool M_OTTO [8][8];
     int M_CORD [10][2];
@@ -252,18 +253,22 @@ void StampaM(cord *g){
         }
         cout << endl;
     }
-    cout << "Cordinate CELLE RIEMPITE: \n Ordine \tCordX \tCordY" << endl;
+#ifdef DEBUG
+    cout << "Cordinate CELLE RIEMPITE: \nOrdine \tCordX \tCordY" << endl;
     for(short i = 0; i < 8; i++){
             cout << i + 1 << " \t" << g->M_CORD[i][0] << " \t" << g->M_CORD[i][1] << endl;
     }
+#endif
 }
 void GenP(cord *g){
-    short gx = rand() % 7;
-    short gy = rand() % 7;
+    short gx = rand() % 6;
+    short gy = rand() % 6;
     g->M_CORD[0][0] = gx;
     g->M_CORD[0][1] = gy;
     g->M_OTTO[gx][gy] = 1;
+#ifdef DEBUG
     cout << "Cella generata: " << gx << "||" << gy << endl;
+#endif
 }
 void CMPIns(cord *g){
     short mx = 0;
@@ -275,13 +280,17 @@ void CMPIns(cord *g){
     int cmpds = 0;
     for(short i = 0; i < 7; i++){
         cond = 0;
+#ifdef DEBUG
         cout << "Cella n: " << i << endl;
+#endif
         for(mx = 0; mx < 8; mx++){
             if (cond == 4){
                 break;
             }
             for(my = 0; my < 8; my++){
+#ifdef DEBUG
                 cout << "Posizione Controllata: " << mx <<"||" << my << endl;
+#endif
                 cmpr = CMPR(g, mx, my);
                 cmpd = CMPD(g, mx, my);
                 cmpc = CMPC(g, mx, my);
@@ -291,7 +300,9 @@ void CMPIns(cord *g){
                     g->M_OTTO[mx][my] = 1;
                     g->M_CORD[i + 1][0] = mx;
                     g->M_CORD[i + 1][1] = my;
+#ifdef DEBUG
                     cout << endl << endl << "CELLA "<< mx << " RIEMPITA CORRETAMENTE CON CORDINATE\t" << mx << "||" << my << endl << endl;
+#endif
                     //system ("color 0F");
                     break;
                 }
@@ -301,12 +312,16 @@ void CMPIns(cord *g){
 }
 bool CMPR(cord *g, short r, short c){
     short cont = 0;
+#ifdef DEBUG
     cout << "CMPR: ";
+#endif
     for(short i = 0; i < 8; i++){
         if(g->M_OTTO[r][i] == 0)
             cont++;
     }
+#ifdef DEBUG
     cout << cont << endl;
+#endif
     if(cont == 8)
         return 1;
     else
@@ -314,19 +329,25 @@ bool CMPR(cord *g, short r, short c){
 }
 bool CMPC(cord *g, short r, short c){
     short cont = 0;
+#ifdef DEBUG
     cout << "CMPC: ";
+#endif
     for(short i = 0; i < 8; i++){
         if(g->M_OTTO[i][c] == 0)
             cont++;
     }
+#ifdef DEBUG
     cout << cont << endl;
+#endif
     if(cont == 8)
         return 1;
     else
         return 0;
 }
 bool CMPD(cord *g, short r, short c){
+#ifdef DEBUG
     cout << "CMPD: ";
+#endif 
     short pos = 0; //1 se è sotto la DP, 2 se è nella DP, 3 se è sopra la DP
     short cont = 0;
     short dxi = r;
@@ -355,7 +376,9 @@ bool CMPD(cord *g, short r, short c){
                 if(g->M_OTTO[i][j] == 0)
                     cont++;
             }
+#ifdef DEBUG
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+#endif 
             if(cont >= d)
                 return 1;
             else
@@ -368,7 +391,9 @@ bool CMPD(cord *g, short r, short c){
                     cont ++;
                 }
             }
+#ifdef DEBUG
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+#endif
             if(cont >= 8)
                 return 1;
             else{
@@ -389,7 +414,9 @@ bool CMPD(cord *g, short r, short c){
                 if(g->M_OTTO[i][j] == 0)
                     cont++;
             }
+#ifdef DEBUG
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+#endif
             if(cont >= d)
                 return 1;
             else
@@ -398,7 +425,9 @@ bool CMPD(cord *g, short r, short c){
     }
 }
 bool CMPDS(cord *g, short r, short c){
+#ifdef DEBUG
     cout << "CMPDS: ";
+#endif
     short pos = 0;
     short src = r + c; // 1 se sopra ds, 2 se sulla ds, 3 se sotto ds
     short cont = 0;
@@ -429,7 +458,9 @@ bool CMPDS(cord *g, short r, short c){
                     cont++;
                 }
             }
+#ifdef DEBUG
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+#endif
             if(cont >= d)
                 return 1;
             else
@@ -441,7 +472,9 @@ bool CMPDS(cord *g, short r, short c){
                     cont ++;
                 }
             }
+#ifdef DEBUG
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+#endif
             if(cont >= 8)
                 return 1;
             else{
@@ -462,7 +495,9 @@ bool CMPDS(cord *g, short r, short c){
                 if(g->M_OTTO[i][j] == 0)
                     cont++;
             }
+#ifdef DEBUG
             cout <<"\tPOS: " << pos << "\tCont: " << cont << "\tDXI: " << dxi <<"\tDYI: " << dyi << "\tDXF: " << dxf <<"\tDYF: " << dyf << endl;
+#endif
             if(cont >= d)
                 return 1;
             else

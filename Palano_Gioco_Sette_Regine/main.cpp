@@ -10,7 +10,6 @@
  *
  * Created on 30 marzo 2020, 9.55
  */
-
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
@@ -19,47 +18,64 @@
 #include <string.h>
 #include <math.h>
 #include <windows.h>
-#define DEBUG //scommentare questa riga per tutto il debug
+//#define DEBUG //scommentare questa riga per tutto il debug
 typedef struct M{
     bool M_OTTO [8][8];
-    int M_CORD [10][2];
+    bool M_CL[8][8];
+    int M_CORD [10][4];
 }cord;
 
 using namespace std;
 
 
-void RiempiM(cord *);
-void StampaM(cord *, char *);
+void RiempiM(cord *, cord *);
+void StampaM(cord *);
 void GenP(cord *);
 void CMPIns(cord *, char *, int *);
-void M(cord *);
+void M(cord *, cord *);
 bool CMPR(cord *, short, short);
 bool CMPC(cord *, short, short);
 bool CMPD(cord *, short, short);
 bool CMPDS(cord *, short, short);
+bool InsUt(cord *); // utente
+void InsFRC(cord *);// utente
+void Sfida(cord *, cord *);
+bool Chiedi();
+void SM(cord *, cord*);
+bool InsCPU(cord *);
 int main(int argc, char** argv) {
     cord gioco;
-    M(&gioco);
+    cord utente;
+    SM(&gioco, &utente);
     return 0;
 }
-void M(cord *g){
+void SM(cord *g, cord *u){
+    fflush(stdin);
+    Sfida(g, u);
+}
+void M(cord *g, cord *u){
     cout << "Sto calcolando ...." << endl;
     char msg[64];
     int fun[3] = {0, 0, 0};
     do{
         fun[0] = 0;
-        RiempiM(g);
+        RiempiM(g, u);
         srand(time(NULL));
         GenP(g);
         CMPIns(g, msg, fun);
         fun[2] = fun[2] + 1;
     }while(fun[0] < 6);
-    StampaM(g, msg);
+    //StampaM(g, msg);
 }
-void RiempiM(cord *g){
+void RiempiM(cord *g, cord *u){
     for(short i = 0; i < 8; i++){
         for(short j = 0; j < 8; j++){
             g->M_OTTO[i][j] = 0;
+        }
+    }
+    for(short i = 0; i < 8; i++){
+        for(short j = 0; j < 8; j++){
+            u->M_OTTO[i][j] = 0;
         }
     }
     /*
@@ -70,9 +86,8 @@ void RiempiM(cord *g){
     }
     */
 }
-void StampaM(cord *g, char *msg){
-    cout << msg << endl;
-    cout << "Matrice Riempita: \n" << endl;
+void StampaM(cord *g){
+    cout << endl << "Matrice del vincitore: \n" << endl;
     for(short i = 0; i < 8; i++){
         for(short j = 0; j < 8; j++){
             cout << "\t" << g->M_OTTO[i][j];
@@ -80,10 +95,10 @@ void StampaM(cord *g, char *msg){
         cout << endl;
     }
 #ifdef DEBUG
-    cout << "Cordinate CELLE RIEMPITE: \nOrdine \tCordX \tCordY" << endl;
-    for(short i = 0; i < 7; i++){
-            cout << i << " \t" << g->M_CORD[i][0] << " \t" << g->M_CORD[i][1] << endl;
-    }
+    //cout << "Cordinate CELLE RIEMPITE: \nOrdine \tCordX \tCordY" << endl;
+    //for(short i = 0; i < 7; i++){
+      //      cout << i << " \t" << g->M_CORD[i][0] << " \t" << g->M_CORD[i][1] << endl;
+    //}
 #endif
 }
 void GenP(cord *g){
@@ -346,4 +361,158 @@ bool CMPDS(cord *g, short r, short c){ // controllo diagonale con orientamento u
     }
     
 }
- 
+bool InsUt(cord *g){ //utente , vuole u come parametro attuale
+    int mx = 0;
+    int my = 0;
+    bool cmp;
+    cout << "Riempi una cella !\nLe posizioni inziano da 1 e finiscono ad 8" << endl;
+    do{
+        cmp = 1;
+        cout << "Inserire cordinata della riga che vuoi popolare: ";
+        fflush(stdin);
+        cin >> mx;
+        if( mx >= 1 && mx <= 8)
+            cmp = 0;
+        else{
+            cout << "La cordinata della riga inserita non è valida! \nLe posizioni inziano da 1 e finiscono ad 8 ! " << endl;
+        }
+    }while(cmp);
+    do{
+        cmp = 1;
+        cout << "Inserire cordinata della colonna che vuoi popolare: ";
+        fflush(stdin);
+        cin >> my;
+        if( my >= 1 && my <= 8)
+            cmp = 0;
+        else{
+            cout << "La cordinata della colonna inserita non è valida! \nLe posizioni inziano da 1 e finiscono ad 8 ! " << endl;
+        }
+    }while(cmp);
+    mx--;
+    my--;
+    if(CMPR(g,  mx, my) && CMPC(g, mx, my) && CMPD(g, mx, my) && CMPDS(g, mx, my)){
+        g->M_OTTO[mx][my] = 1;
+        return 1;
+    }
+    else{
+        return 0;
+    }
+
+}
+void InsFRC(cord *g){
+    int mx = 0;
+    int my = 0;
+    bool cmp;
+    cout << "\nInserire cordinate della prima cella che vuoi popolare - é la prima cella che popoli, non ci sono controlli e quindi non puoi sbagliare :), ma rispetta le posizioni delle celle! -\nLe posizioni inziano da 1 e finiscono ad 8" << endl;
+    do{
+        cmp = 0;
+        cout << "Inserire cordinata della riga che vuoi popolare: ";
+        fflush(stdin);
+        cin >> mx ;
+        if( mx < 1 || mx > 8){
+            cmp = 1;
+            cout << "La cordinata della riga inserita non è valida! \nLe posizioni inziano da 1 e finiscono ad 8 ! " << endl;
+        }
+    }while(cmp);
+    do{
+        cmp = 1;
+        cout << "Inserire cordinata della colonna che vuoi popolare: ";
+        fflush(stdin);
+        cin >> my;
+        if( my >= 1 && my <= 8)
+            cmp = 0;
+        else{
+            cout << "La cordinata della colonna inserita non è valida! \nLe posizioni inziano da 1 e finiscono ad 8 ! " << endl;
+        }
+    }while(cmp);
+    mx--;
+    my--;
+    g->M_OTTO[mx][my] = 1;
+}
+void Sfida(cord *g, cord *u){
+    srand(time(NULL));
+    int puntU = 1;
+    int puntC = 1;
+    int tent = 0;
+    bool cmp = 1;
+    short turno = 1;
+    RiempiM(g, u);
+    srand(time(NULL));
+    GenP(g); 
+    InsFRC(u); 
+    do{
+        cout << endl << "Turno n°: " << turno << endl;
+        turno++;
+        cout <<  endl << "Punti utente: " << puntU << " || Punti cpu: " << puntC << " || Tentativi: " << (tent + 1) << "\nCelle rimanenti all' utente:  " << (7 - puntU) << " || Celle rimanenti alla cpu: " << (7 - puntC) << endl; 
+        if(InsUt(u)){
+            cout << endl << "Hai guadagnato un punto! " << endl;
+            puntU++;
+        }
+        else if (Chiedi()){
+            cmp = 1;
+            tent ++;
+        }
+        else{
+            cmp = 0;
+        }
+        if(InsCPU(g)){
+            if(cmp){
+                cout << endl << "La cpu ha guadagnato un punto!" << endl;
+                puntC++;
+            }
+        }
+        else{
+            if(cmp){
+                cout << "La cpu ha sbagliato !" << endl;
+            }
+        }
+    }while(puntU < 7 && puntC < 7 && cmp);
+    if(puntU >= 7){
+        cout << "Hai vinto! Tentativi utilizzati: " << tent + 1 << endl;
+        StampaM(u);
+    }
+    else if (puntC >= 7){
+        cout << "Hai perso, la cpu ti ha battuto ! " << endl;
+        StampaM(g);
+    }
+    else if (!cmp){
+        cout << "Ti sei arreso! Punti effettuati: " << puntU - 1 << " || Tentativi utilizzati: " << tent + 1 << endl;
+    }
+}
+bool Chiedi(){
+    char ris[5];
+    bool cris;
+    cout << "Hai sbagliato !" << endl;
+    do{
+        cris = 0;
+        cout << "Vuoi continuare(si/no) ? **Ripartirai da dove ti sei fermato e verrà aggiunto un tentativo**\n";
+        fflush(stdin);
+        cin >> ris;
+        system("Sleep 0.1");
+        if(!strcmp(ris,"si") || !strcmp(ris,"Si") || !strcmp(ris,"SI") ||  !strcmp(ris,"sì") || !strcmp(ris,"Sì") || !strcmp(ris,"S") || !strcmp(ris,"s") || !strcmp(ris,"NO") || !strcmp(ris,"no") || !strcmp(ris,"n") || !strcmp(ris,"N")|| !strcmp(ris,"No") )
+        {
+            cris = 0;
+        }     
+        else{
+            cout << endl <<  "Risposta non valida" << endl;
+            cris = 1;
+        }
+    }while(cris);
+    if(!strcmp(ris,"si") || !strcmp(ris,"Si") || !strcmp(ris,"SI") ||  !strcmp(ris,"sì") || !strcmp(ris,"Sì") || !strcmp(ris,"S") || !strcmp(ris,"s")){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+
+}
+bool InsCPU(cord *g){
+    int mx = rand() % 7;
+    int my = rand() % 7;
+    if(CMPR(g,  mx, my) && CMPC(g, mx, my) && CMPD(g, mx, my) && CMPDS(g, mx, my)){
+        g->M_OTTO[mx][my] = 1;
+        return 1;
+    }
+    else
+        return 0;   
+}

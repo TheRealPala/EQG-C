@@ -19,7 +19,7 @@
 #include <string.h>
 #include <math.h>
 #include <windows.h>
-//#define DEBUG //scommentare questa riga per tutto il debug
+#define DEBUG //scommentare questa riga per tutto il debug
 typedef struct M{
     bool M_OTTO [8][8];
     int M_CORD [10][2];

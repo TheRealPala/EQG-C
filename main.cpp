@@ -10,7 +10,7 @@
  *
  * Created on 30 marzo 2020, 9.55
  */
-
+// branch prova
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
@@ -22,6 +22,7 @@
 //#define DEBUG //scommentare questa riga per tutto il debug
 typedef struct M{
     bool M_OTTO [8][8];
+    bool M_CL[8][8];
     int M_CORD [10][2];
 }cord;
 
